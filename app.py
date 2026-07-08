@@ -706,6 +706,8 @@ def export_pdf():
     stream.seek(0)
     return send_file(stream, as_attachment=True, download_name=filename, mimetype="application/pdf")
 
+with app.app_context():
+    init_db()
 
 if __name__ == "__main__":
     init_db()
