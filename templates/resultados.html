@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>{{ titulo }}</h1>
+  </div>
+  <a class="btn btn-outline-primary" href="{{ url_for('exportar', tipo='filtrado') }}?{{ request.query_string.decode() }}">Exportar Excel</a>
+</div>
+{% include "_filters.html" %}
+<section class="chart-grid">
+  {% if vista == 'hotel' %}
+    <div class="chart-card wide"><h2>Resultado por hotel</h2><canvas id="hotelChart"></canvas></div>
+  {% elif vista == 'departamento' %}
+    <div class="chart-card wide"><h2>Resultado por departamento</h2><canvas id="deptoChart"></canvas></div>
+  {% elif vista == 'factor' %}
+    <div class="chart-card wide"><h2>Ranking de factores</h2><canvas id="factorChart"></canvas></div>
+  {% else %}
+    <div class="chart-card wide"><h2>Resultado por pregunta</h2><canvas id="preguntaChart"></canvas></div>
+    <div class="chart-card wide"><h2>Resultado general por factor</h2><canvas id="factorChart"></canvas></div>
+  {% endif %}
+</section>
+{% endblock %}
+{% block scripts %}
+<script>window.dashboardData = {{ data|tojson }};</script>
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Gracias{% endblock %}
+{% block content %}
+<section class="thanks-panel">
+  <div class="thanks-icon">OK</div>
+  <h1>Muchas gracias por contestar la encuesta</h1>
+  <p>Que tengas un gran dia.</p>
+  <div class="home-actions">
+    <a class="btn btn-primary btn-lg" href="{{ url_for('encuesta') }}">Nueva encuesta</a>
+    <a class="btn btn-outline-primary btn-lg" href="{{ url_for('home') }}">Pagina de inicio</a>
+  </div>
+</section>
+{% endblock %}

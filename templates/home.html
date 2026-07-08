@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="home-panel">
+  <div>
+    <img class="home-logo" src="{{ url_for('static', filename='img/LogoOptima.jpg') }}" alt="Optima Hoteles Mexico">
+    <h1>Clima Laboral Optima</h1>
+  </div>
+  <div class="home-actions">
+    <a class="btn btn-primary btn-lg" href="{{ url_for('encuesta') }}">Contestar encuesta</a>
+    <a class="btn btn-outline-primary btn-lg" href="{{ url_for('login') }}">Ver resultados</a>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+{% block title %}Contestar encuesta{% endblock %}
+{% block content %}
+<div class="survey-head">
+  <div>
+    <h1>Contestar encuesta</h1>
+  </div>
+</div>
+
+{% if paso == 'campana' %}
+  <form method="post" class="survey-step">
+    <input type="hidden" name="accion" value="campana">
+    <section class="form-section step-card">
+      <span class="step-number">1</span>
+      <h2>Seleccionar campana</h2>
+      <label class="form-label">Campana</label>
+      <select name="campana_id" class="form-select form-select-lg" required autofocus>
+        <option value="">Seleccione</option>
+        {% for item in campanas %}
+          <option value="{{ item.id }}" {% if encuesta_datos.campana_id == item.id|string %}selected{% endif %}>{{ item.nombre }}</option>
+        {% endfor %}
+      </select>
+      <div class="step-actions">
+        <button class="btn btn-primary btn-lg">Siguiente</button>
+      </div>
+    </section>
+  </form>
+{% elif paso == 'datos' %}
+  <form method="post" class="survey-step">
+    <input type="hidden" name="accion" value="datos">
+    <section class="form-section step-card">
+      <span class="step-number">2</span>
+      <h2>Datos generales</h2>
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label class="form-label">Hotel</label>
+          <select name="hotel_id" class="form-select form-select-lg" required autofocus>
+            <option value="">Seleccione</option>
+            {% for item in hoteles %}
+              <option value="{{ item.id }}" {% if encuesta_datos.hotel_id == item.id|string %}selected{% endif %}>{{ item.nombre }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Departamento</label>
+          <select name="departamento_id" class="form-select form-select-lg" required>
+            <option value="">Seleccione</option>
+            {% for item in departamentos %}
+              <option value="{{ item.id }}" {% if encuesta_datos.departamento_id == item.id|string %}selected{% endif %}>{{ item.nombre }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col-md-4"><label class="form-label">Sexo</label><select name="sexo" class="form-select" required><option value="">Seleccione</option>{% for item in catalogos.sexo %}<option {% if encuesta_datos.sexo == item %}selected{% endif %}>{{ item }}</option>{% endfor %}</select></div>
+        <div class="col-md-4"><label class="form-label">Escolaridad</label><select name="escolaridad" class="form-select" required><option value="">Seleccione</option>{% for item in catalogos.escolaridad %}<option {% if encuesta_datos.escolaridad == item %}selected{% endif %}>{{ item }}</option>{% endfor %}</select></div>
+        <div class="col-md-4"><label class="form-label">Estado civil</label><select name="estado_civil" class="form-select" required><option value="">Seleccione</option>{% for item in catalogos.estado_civil %}<option {% if encuesta_datos.estado_civil == item %}selected{% endif %}>{{ item }}</option>{% endfor %}</select></div>
+        <div class="col-md-6"><label class="form-label">Antiguedad</label><select name="antiguedad" class="form-select" required><option value="">Seleccione</option>{% for item in catalogos.antiguedad %}<option {% if encuesta_datos.antiguedad == item %}selected{% endif %}>{{ item }}</option>{% endfor %}</select></div>
+        <div class="col-md-6"><label class="form-label">Edad</label><select name="edad_rango" class="form-select" required><option value="">Seleccione</option>{% for item in catalogos.edad_rango %}<option {% if encuesta_datos.edad_rango == item %}selected{% endif %}>{{ item }}</option>{% endfor %}</select></div>
+      </div>
+      <div class="step-actions">
+        <a class="btn btn-light btn-lg" href="{{ url_for('encuesta', paso='campana') }}">Anterior</a>
+        <button class="btn btn-primary btn-lg">Siguiente</button>
+      </div>
+    </section>
+  </form>
+{% else %}
+  <form method="post" id="surveyForm">
+    <input type="hidden" name="accion" value="guardar">
+    {% for factor, preguntas in preguntas_por_factor.items() %}
+      <section class="factor-section">
+        <h2>{{ factor }}</h2>
+        <div class="question-list">
+          {% for p in preguntas %}
+            <article class="question-card">
+              <div class="question-text"><span>{{ p.numero }}</span>{{ p.texto }}</div>
+              <div class="answer-toggle" role="group" aria-label="Respuesta pregunta {{ p.numero }}">
+                <input type="radio" class="btn-check survey-answer" name="pregunta_{{ p.id }}" id="p{{ p.id }}si" value="Si" required>
+                <label class="btn btn-outline-success" for="p{{ p.id }}si">Si</label>
+                <input type="radio" class="btn-check survey-answer" name="pregunta_{{ p.id }}" id="p{{ p.id }}no" value="No" required>
+                <label class="btn btn-outline-danger" for="p{{ p.id }}no">No</label>
+              </div>
+            </article>
+          {% endfor %}
+        </div>
+      </section>
+    {% endfor %}
+
+    <section class="factor-section">
+      <h2>Preguntas abiertas</h2>
+      <div class="question-list">
+        {% for numero, texto in preguntas_abiertas %}
+          <article class="open-question-card">
+            <label class="question-text" for="abierta_{{ numero }}"><span>{{ numero }}</span>{{ texto }}</label>
+            <textarea class="form-control survey-open" id="abierta_{{ numero }}" name="abierta_{{ numero }}" rows="{{ 5 if numero == 75 else 2 }}" required></textarea>
+          </article>
+        {% endfor %}
+      </div>
+    </section>
+
+    <div class="sticky-submit">
+      <div class="submit-actions">
+        <div class="progress survey-progress">
+          <div class="progress-bar" id="surveyProgress" style="width:0%">0%</div>
+        </div>
+        <a class="btn btn-light btn-lg" href="{{ url_for('encuesta', paso='datos') }}">Anterior</a>
+        <button class="btn btn-primary btn-lg">Guardar encuesta</button>
+      </div>
+    </div>
+  </form>
+{% endif %}
+{% endblock %}
+{% block scripts %}
+{% if paso == 'preguntas' %}
+  <script src="{{ url_for('static', filename='js/survey.js') }}"></script>
+{% endif %}
+{% endblock %}
